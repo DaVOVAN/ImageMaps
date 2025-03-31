@@ -1,18 +1,21 @@
 // app/marker/[id].tsx
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Text, FlatList, TouchableOpacity, Image, Alert, StyleSheet, Modal } from 'react-native';
+import { View, TextInput, Text, FlatList, TouchableOpacity, Image, Alert, StyleSheet, Modal, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import { useMarkers } from '../../context/MarkerContext';
 import { RootStackParamList, ImageData } from '../../types';
+import globalStyles from '../../styles/globalStyles'; // Импорт стилей
+
+const NUM_COLUMNS = 3; // Количество колонок
 
 const MarkerDetailsScreen = () => {
   const { params } = useRoute();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { markers, updateMarker } = useMarkers();
   const { id } = params as { id: string };
-  
+
   const marker = markers.find(m => m.id === id);
   const [title, setTitle] = useState(marker?.title || '');
   const [description, setDescription] = useState(marker?.description || '');
@@ -37,7 +40,7 @@ const MarkerDetailsScreen = () => {
   const handleAddImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         quality: 1,
       });
 
@@ -60,190 +63,97 @@ const MarkerDetailsScreen = () => {
   if (!marker) return null;
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={globalStyles.markerDetailsContainer}
+    contentContainerStyle={globalStyles.scrollViewContent}
+    >
       {/* Заголовок */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Название маркера</Text>
+      <View style={globalStyles.markerDetailsInputContainer}>
+        <Text style={globalStyles.markerDetailsLabel}>Название маркера</Text>
         <TextInput
           value={title}
           onChangeText={setTitle}
           placeholder="Введите название..."
           placeholderTextColor="#999"
-          style={styles.titleInput}
+          style={globalStyles.markerDetailsTitleInput}
         />
       </View>
 
       {/* Описание */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Описание</Text>
+      <View style={globalStyles.markerDetailsInputContainer}>
+        <Text style={globalStyles.markerDetailsLabel}>Описание</Text>
         <TextInput
           value={description}
           onChangeText={setDescription}
           placeholder="Добавьте описание..."
           placeholderTextColor="#999"
           multiline
-          style={styles.descriptionInput}
+          style={globalStyles.markerDetailsDescriptionInput}
         />
       </View>
 
+      {/* Координаты */}
+      <View style={globalStyles.markerDetailsInputContainer}>
+        <Text style={globalStyles.markerDetailsLabel}>Координаты</Text>
+        <Text style={globalStyles.markerDetailsCoordinateText}>
+          Широта: {marker.coordinate.latitude}
+        </Text>
+        <Text style={globalStyles.markerDetailsCoordinateText}>
+          Долгота: {marker.coordinate.longitude}
+        </Text>
+      </View>
+
       {/* Галерея изображений */}
-      <Text style={styles.sectionTitle}>Прикрепленные фото ({images.length})</Text>
-      <FlatList
-        data={images}
-        numColumns={2}
-        columnWrapperStyle={styles.galleryWrapper}
-        renderItem={({ item }) => (
-          <View style={styles.imageContainer}>
-            <TouchableOpacity 
+      <Text style={globalStyles.markerDetailsSectionTitle}>Прикрепленные фото ({images.length})</Text>
+      <View style={globalStyles.markerDetailsGalleryWrapper}>
+        {images.map((item) => (
+          <View key={item.id} style={globalStyles.markerDetailsImageContainer}>
+            <TouchableOpacity
               onPress={() => setSelectedImage(item.uri)}
               onLongPress={() => handleDeleteImage(item.id)}
             >
               <Image
                 source={{ uri: item.uri }}
-                style={styles.image}
+                style={globalStyles.markerDetailsImage}
               />
-              <View style={styles.deleteOverlay}>
-                <Text style={styles.deleteText}>Удерживайте для удаления</Text>
+              <View style={globalStyles.markerDetailsDeleteOverlay}>
+                <Text style={globalStyles.markerDetailsDeleteText}>Удерживайте для удаления</Text>
               </View>
             </TouchableOpacity>
           </View>
-        )}
-        keyExtractor={item => item.id}
-      />
+        ))}
+      </View>
 
       {/* Кнопки */}
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={handleAddImage}
-        style={styles.addButton}
+        style={globalStyles.markerDetailsAddButton}
       >
-        <Text style={styles.buttonText}>➕ Добавить фото</Text>
+        <Text style={globalStyles.markerDetailsButtonText}>➕ Добавить фото</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={handleSave}
-        style={styles.saveButton}
+        style={globalStyles.markerDetailsSaveButton}
       >
-        <Text style={styles.buttonText}>Сохранить изменения</Text>
+        <Text style={globalStyles.markerDetailsButtonText}>Сохранить изменения</Text>
       </TouchableOpacity>
 
       {/* Модальное окно просмотра фото */}
       <Modal visible={!!selectedImage} transparent>
-        <View style={styles.modalContainer}>
-          <TouchableOpacity 
-            style={styles.modalBackground}
+        <View style={globalStyles.markerDetailsModalContainer}>
+          <TouchableOpacity
+            style={globalStyles.markerDetailsModalBackground}
             onPress={() => setSelectedImage(null)}
           >
-            <Image
-              source={{ uri: selectedImage! }}
-              style={styles.fullscreenImage}
+            <Image source={{ uri: selectedImage! }}
+              style={globalStyles.markerDetailsFullscreenImage}
               resizeMode="contain"
             />
           </TouchableOpacity>
         </View>
       </Modal>
-    </View>
+    </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  inputContainer: {
-    marginBottom: 25,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  titleInput: {
-    fontSize: 18,
-    borderWidth: 1,
-    borderColor: '#007AFF',
-    borderRadius: 8,
-    padding: 12,
-    color: '#000',
-  },
-  descriptionInput: {
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#007AFF',
-    borderRadius: 8,
-    padding: 12,
-    color: '#000',
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333',
-  },
-  galleryWrapper: {
-    justifyContent: 'space-between',
-  },
-  imageContainer: {
-    width: '48%',
-    marginBottom: 15,
-  },
-  image: {
-    width: '100%',
-    height: 180,
-    borderRadius: 10,
-  },
-  deleteOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding: 5,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-  },
-  deleteText: {
-    color: 'white',
-    fontSize: 12,
-    textAlign: 'center',
-  },
-  addButton: {
-    backgroundColor: '#34C759',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  saveButton: {
-    backgroundColor: '#007AFF',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.9)',
-    justifyContent: 'center',
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  fullscreenImage: {
-    width: '100%',
-    height: '100%',
-  },
-});
 
 export default MarkerDetailsScreen;

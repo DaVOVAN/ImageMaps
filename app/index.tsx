@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMarkers } from '../context/MarkerContext';
 import { RootStackParamList } from '../types';
+import globalStyles from '../styles/globalStyles'; // Import styles
 
 const INITIAL_REGION = {
   latitude: 58.005785,
@@ -36,7 +37,7 @@ const MapScreen = () => {
 
   return (
     <MapView
-      style={{ flex: 1 }}
+      style={globalStyles.mapScreenContainer}
       initialRegion={INITIAL_REGION}
       onLongPress={handleLongPress}
       onMapReady={() => console.log('Map loaded')}
