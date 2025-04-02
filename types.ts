@@ -1,4 +1,3 @@
-// types.ts
 export interface ImageData {
   id: string;
   uri: string;

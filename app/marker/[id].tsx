@@ -1,4 +1,3 @@
-// app/marker/[id].tsx
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Text, FlatList, TouchableOpacity, Image, Alert, StyleSheet, Modal, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -7,14 +6,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { useMarkers } from '../../context/MarkerContext';
 import { useDatabase } from '../../context/DatabaseContext';
 import { RootStackParamList, ImageData } from '../../types';
-import globalStyles from '../../styles/globalStyles'; // Импорт стилей
+import globalStyles from '../../styles/globalStyles';
 
-const NUM_COLUMNS = 3; // Количество колонок
+const NUM_COLUMNS = 3; // Количество фотографий в одной строке
 
 const MarkerDetailsScreen = () => {
     const { params } = useRoute();
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-    const { markers, updateMarker, deleteMarker } = useMarkers(); // Получаем deleteMarker из контекста
+    const { markers, updateMarker, deleteMarker } = useMarkers();
     const { addImage, deleteImage, getMarkerImages } = useDatabase();
     const { id } = params as { id: string };
 
@@ -105,8 +104,8 @@ const MarkerDetailsScreen = () => {
                   text: "Удалить",
                   onPress: async () => {
                       try {
-                          await deleteMarker(marker.id); // Удаляем маркер
-                          navigation.goBack(); // Возвращаемся на карту
+                          await deleteMarker(marker.id);
+                          navigation.goBack();
                       } catch (error: any) {
                           console.error("Ошибка при удалении маркера:", error.message);
                           Alert.alert("Ошибка", "Не удалось удалить маркер.");
@@ -187,7 +186,7 @@ const MarkerDetailsScreen = () => {
                 onPress={handleAddImage}
                 style={globalStyles.markerDetailsAddButton}
             >
-                <Text style={globalStyles.markerDetailsButtonText}>➕ Добавить фото</Text>
+                <Text style={globalStyles.markerDetailsButtonText}>+ Добавить фото +</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -205,7 +204,7 @@ const MarkerDetailsScreen = () => {
                 <Text style={globalStyles.markerDetailsButtonText}>Удалить маркер</Text>
             </TouchableOpacity>
 
-            {/* Модальное окно просмотра фото */}
+            {/* Окно просмотра фото */}
             <Modal visible={!!selectedImage} transparent>
                 <View style={globalStyles.markerDetailsModalContainer}>
                     <TouchableOpacity

@@ -1,4 +1,3 @@
-// context/MarkersContext.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { MarkerData } from '../types';
 import { useDatabase } from './DatabaseContext';
@@ -6,7 +5,7 @@ import { useDatabase } from './DatabaseContext';
 interface MarkersContextType {
   markers: MarkerData[];
   addMarker: (latitude: number, longitude: number) => Promise<void>;
-  updateMarker: (marker: MarkerData) => Promise<void>; // Добавлено обновление маркера
+  updateMarker: (marker: MarkerData) => Promise<void>;
   deleteMarker: (id: string) => Promise<void>;
 }
 
@@ -18,13 +17,12 @@ export const MarkersProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   useEffect(() => {
     const loadMarkers = async () => {
-      if (isDatabaseLoading) { //  <-- Добавляем эту проверку
+      if (isDatabaseLoading) {
         return; // Не загружаем, пока база данных не инициализирована
       }
 
       try {
         const loadedMarkers = await getMarkers();
-        // Загружаем изображения для каждого маркера
         const markersWithImages = await Promise.all(
           loadedMarkers.map(async (marker) => {
             const images = await getMarkerImages(marker.id);
@@ -38,7 +36,7 @@ export const MarkersProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     loadMarkers();
-  }, [isDatabaseLoading, getMarkers, getMarkerImages]);  // <-- Добавляем isDatabaseLoading в список зависимостей
+  }, [isDatabaseLoading, getMarkers, getMarkerImages]);
 
   const addMarker = async (latitude: number, longitude: number) => {
     try {
@@ -62,10 +60,8 @@ export const MarkersProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateMarker = async (updatedMarker: MarkerData) => {
     try {
-      // Обновляем маркер в базе данных
       await updateMarkerInDb(updatedMarker.id, updatedMarker.title, updatedMarker.description);
 
-      // Обновляем маркер в локальном состоянии
       setMarkers(prev =>
         prev.map(m => (m.id === updatedMarker.id ? { ...m, title: updatedMarker.title, description: updatedMarker.description } : m))
       );

@@ -1,4 +1,3 @@
-// app/index.tsx
 import React, { useState } from 'react';
 import { Alert } from 'react-native';
 import MapView, { LongPressEvent, Marker, Callout } from 'react-native-maps';
