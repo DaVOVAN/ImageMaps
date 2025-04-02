@@ -86,6 +86,14 @@ const globalStyles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 'auto',
+    marginVertical: 10
+  },
+  markerDetailsDeleteButton: {
+    backgroundColor: '#ff0000',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 'auto',
     marginBottom: -35
   },
   markerDetailsButtonText: {
