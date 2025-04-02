@@ -1,8 +1,7 @@
-// styles/globalStyles.ts
 import { StyleSheet } from 'react-native';
 
 const globalStyles = StyleSheet.create({
-  // MarkerDetailsScreen styles
+  // Экран деталей маркеров
   markerDetailsContainer: {
     flex: 1,
     padding: 20,
@@ -47,7 +46,7 @@ const globalStyles = StyleSheet.create({
     marginHorizontal: -5,
     marginBottom: 10
   },
-  // Styles for image container and image
+  // Фотографии
   markerDetailsImageContainer: {
     width: '30%',
     aspectRatio: 1,
@@ -86,6 +85,14 @@ const globalStyles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 'auto',
+    marginVertical: 10
+  },
+  markerDetailsDeleteButton: {
+    backgroundColor: '#ff0000',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 'auto',
     marginBottom: -35
   },
   markerDetailsButtonText: {
@@ -112,10 +119,10 @@ const globalStyles = StyleSheet.create({
     color: '#666',
   },
   scrollViewContent: {
-    paddingBottom: 80 // Запас для нижних кнопок
+    paddingBottom: 80
   },
 
-  // MapScreen styles
+  //Карта
   mapScreenContainer: {
     flex: 1
   },

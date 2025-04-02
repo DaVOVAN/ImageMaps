@@ -1,12 +1,11 @@
-// app/index.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Alert } from 'react-native';
-import MapView, { LongPressEvent, Marker } from 'react-native-maps';
+import MapView, { LongPressEvent, Marker, Callout } from 'react-native-maps';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMarkers } from '../context/MarkerContext';
 import { RootStackParamList } from '../types';
-import globalStyles from '../styles/globalStyles'; // Import styles
+import globalStyles from '../styles/globalStyles';
 
 const INITIAL_REGION = {
   latitude: 58.005785,
@@ -16,23 +15,37 @@ const INITIAL_REGION = {
 };
 
 const MapScreen = () => {
-  const { markers, addMarker } = useMarkers();
+  const { markers, addMarker, deleteMarker } = useMarkers();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleLongPress = (e: LongPressEvent) => {
-    const newMarker = {
-      id: Date.now().toString(),
-      coordinate: e.nativeEvent.coordinate,
-      title: 'Новый маркер',
-      description: '',
-      images: [],
-    };
-    addMarker(newMarker);
+    const { latitude, longitude } = e.nativeEvent.coordinate;
+    addMarker(latitude, longitude);
   };
 
-  // Упрощенный обработчик нажатия
-  const handleMarkerPress = (markerId: string) => {
+  const handleCalloutPress = (markerId: string) => {
     navigation.navigate('MarkerDetails', { id: markerId });
+  };
+
+  const handleDeleteMarker = (markerId: string) => {
+    Alert.alert(
+      "Удалить маркер",
+      "Вы уверены, что хотите удалить этот маркер?",
+      [
+        {
+          text: "Отмена",
+          style: "cancel"
+        },
+        {
+          text: "Удалить",
+          onPress: () => {
+            deleteMarker(markerId);
+          },
+          style: 'destructive',
+        }
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -46,8 +59,12 @@ const MapScreen = () => {
         <Marker
           key={marker.id}
           coordinate={marker.coordinate}
-          onPress={() => handleMarkerPress(marker.id)}
-        />
+          title={marker.title}
+          description={marker.description}
+        >
+          <Callout onPress={() => handleCalloutPress(marker.id)}>
+          </Callout>
+        </Marker>
       ))}
     </MapView>
   );
